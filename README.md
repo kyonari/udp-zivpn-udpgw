@@ -1,4 +1,4 @@
-![](https://github.com/powermx/dl/blob/master/zivpn.png)
+![ZIVPN](zivpn.png)
 
 UDP server installation for ZIVPN Tunnel (SSH/DNS/UDP) VPN app.
 <br>
@@ -25,7 +25,7 @@ sudo wget -O ziun.sh https://raw.githubusercontent.com/zahidbd2/udp-zivpn/main/u
 Client App available:
 
 <a href="https://play.google.com/store/apps/details?id=com.zi.zivpn" target="_blank" rel="noreferrer">Download APP on Playstore</a>
-> ZiVPN
+> ZIVPN
                 
 ----
 Bash script by PowerMX
