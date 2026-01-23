@@ -7,10 +7,10 @@ UDP server installation for ZIVPN Tunnel (SSH/DNS/UDP) VPN app.
 
 #### Installation
 ```
-wget -O zi.sh https://raw.githubusercontent.com/kyonari/udp-zivpn-kyo/main/zi.sh; sudo chmod +x zi.sh; sudo ./zi.sh
+wget -O zi.sh https://raw.githubusercontent.com/kyonari/udp-zivpn-udpgw/main/zi.sh; sudo chmod +x zi.sh; sudo ./zi.sh
 ```
 
 #### Uninstall
 ```
-wget -O uninstall.sh https://raw.githubusercontent.com/kyonari/udp-zivpn-kyo/main/uninstall.sh; sudo chmod +x uninstall.sh; sudo ./uninstall.sh
+wget -O uninstall.sh https://raw.githubusercontent.com/kyonari/udp-zivpn-udpgw/main/uninstall.sh; sudo chmod +x uninstall.sh; sudo ./uninstall.sh
 ```
