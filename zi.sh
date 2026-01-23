@@ -10,6 +10,7 @@ NC='\033[0m' # No Color
 ZIVPN_BIN="/usr/local/bin/zivpn"
 ZIVPN_CFG_DIR="/etc/zivpn"
 UDPGW_BIN="/usr/local/bin/udpgw"
+UDPGW_CFG_DIR="/etc/udpgw"
 TMP_DIR=$(mktemp -d)
 
 # Stop script on error
@@ -74,7 +75,7 @@ install_zivpn() {
     elif [ "$ZIVPN_ARCH" == "arm64" ]; then
         DOWNLOAD_URL="https://github.com/zahidbd2/udp-zivpn/releases/download/udp-zivpn_1.4.9/udp-zivpn-linux-arm64"
     else
-        log_err "Arsitektur tidak dikenali untuk download."
+        log_err "Unknown arch!"
         exit 1
     fi
 
@@ -116,6 +117,25 @@ build_udpgw() {
     fi
 }
 
+# --- New Function: Create JSON Config ---
+configure_udpgw() {
+    log_info "Configuring UDPGW JSON..."
+    mkdir -p "$UDPGW_CFG_DIR"
+    
+    cat <<EOF > "$UDPGW_CFG_DIR/udpgw.json"
+{
+    "LogLevel": "info",
+    "LogFilename": "",
+    "LogFileReopenRetries": null,
+    "LogFileCreateMode": 438,
+    "SkipPanickingLogWriter": false,
+    "HostID": "example-host-id",
+    "UdpgwPort": 7300,
+    "DNSResolverIPAddress": "8.8.8.8"
+}
+EOF
+}
+
 configure_kernel() {
     log_info "Optimizing Kernel parameters..."
     cat <<EOF > /etc/sysctl.d/zivpn.conf
@@ -151,7 +171,7 @@ NoNewPrivileges=true
 WantedBy=multi-user.target
 EOF
 
-    # UDPGW Service
+    # UDPGW Service (Updated Command & WorkingDirectory)
     cat <<EOF > /etc/systemd/system/udpgw.service
 [Unit]
 Description=UDPGW Golang Service
@@ -160,7 +180,8 @@ After=network.target
 [Service]
 Type=simple
 User=root
-ExecStart=$UDPGW_BIN -port 7300
+WorkingDirectory=$UDPGW_CFG_DIR
+ExecStart=$UDPGW_BIN run -config udpgw.json
 Restart=always
 RestartSec=3
 LimitNOFILE=65535
@@ -218,7 +239,8 @@ setup_firewall() {
         iptables -t nat -D PREROUTING -i "$IFACE" -p udp --dport 6000:7099 -j DNAT --to-destination :5667 2>/dev/null || true
         iptables -t nat -D PREROUTING -i "$IFACE" -p udp --dport 7501:19999 -j DNAT --to-destination :5667 2>/dev/null || true
         
-        # Add new rule
+        # Add new rule (SPLIT RANGE: 6000-7099 and 7501-19999)
+        # Port 7100-7500 is EXCLUDED so UDPGW (7300) works normally
         iptables -t nat -A PREROUTING -i "$IFACE" -p udp --dport 6000:7099 -j DNAT --to-destination :5667
         iptables -t nat -A PREROUTING -i "$IFACE" -p udp --dport 7501:19999 -j DNAT --to-destination :5667
     fi
@@ -245,6 +267,7 @@ update_system
 stop_services
 install_zivpn
 build_udpgw
+configure_udpgw   # Menjalankan fungsi config baru
 configure_kernel
 setup_services
 configure_passwords
@@ -255,8 +278,8 @@ echo -e ""
 echo -e "======================================="
 echo -e "${GREEN} INSTALLATION COMPLETED ${NC}"
 echo -e "======================================="
-echo -e " UDP Ports   : 6000-19999 (Forwarded to 5667)"
-echo -e " UDPGW Port  : 7300 (Local)"
+echo -e " UDP Ports   : 6000-7099 & 7501-19999"
+echo -e " UDPGW Port  : 7300 (via Config JSON)"
 echo -e " Config File : $ZIVPN_CFG_DIR/config.json"
 echo -e " Arch        : $ZIVPN_ARCH"
 echo -e "======================================="
