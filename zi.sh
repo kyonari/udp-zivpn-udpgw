@@ -1,5 +1,4 @@
 #!/bin/bash
-# Zivpn UDP Module + UDPGW Installer
 
 # --- Global Variables & Colors ---
 RED='\033[0;31m'
@@ -267,7 +266,7 @@ update_system
 stop_services
 install_zivpn
 build_udpgw
-configure_udpgw   # Menjalankan fungsi config baru
+configure_udpgw
 configure_kernel
 setup_services
 configure_passwords
