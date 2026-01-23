@@ -215,8 +215,12 @@ setup_firewall() {
     else
         # Remove old rule if exists
         iptables -t nat -D PREROUTING -i "$IFACE" -p udp --dport 6000:19999 -j DNAT --to-destination :5667 2>/dev/null || true
+        iptables -t nat -D PREROUTING -i "$IFACE" -p udp --dport 6000:7099 -j DNAT --to-destination :5667 2>/dev/null || true
+        iptables -t nat -D PREROUTING -i "$IFACE" -p udp --dport 7501:19999 -j DNAT --to-destination :5667 2>/dev/null || true
+        
         # Add new rule
-        iptables -t nat -A PREROUTING -i "$IFACE" -p udp --dport 6000:19999 -j DNAT --to-destination :5667
+        iptables -t nat -A PREROUTING -i "$IFACE" -p udp --dport 6000:7099 -j DNAT --to-destination :5667
+        iptables -t nat -A PREROUTING -i "$IFACE" -p udp --dport 7501:19999 -j DNAT --to-destination :5667
     fi
 
     if command -v ufw > /dev/null; then
