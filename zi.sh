@@ -78,12 +78,12 @@ install_zivpn() {
         exit 1
     fi
 
-    wget -q --show-progress "$DOWNLOAD_URL" -O "$ZIVPN_BIN"
+    wget -4 -q --show-progress "$DOWNLOAD_URL" -O "$ZIVPN_BIN"
     chmod +x "$ZIVPN_BIN"
     mkdir -p "$ZIVPN_CFG_DIR"
     
     log_info "Downloading Default Config..."
-    wget -q https://raw.githubusercontent.com/zahidbd2/udp-zivpn/main/config.json -O "$ZIVPN_CFG_DIR/config.json"
+    wget -4 -q https://raw.githubusercontent.com/zahidbd2/udp-zivpn/main/config.json -O "$ZIVPN_CFG_DIR/config.json"
 
     log_info "Generating Self-Signed Certificate..."
     openssl req -new -newkey rsa:2048 -days 3650 -nodes -x509 \
